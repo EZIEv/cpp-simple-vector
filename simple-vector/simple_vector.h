@@ -79,10 +79,12 @@ public:
     }
 
     Type& operator[](size_t index) noexcept {
+        assert(index < size_);
         return ptr_[index];
     }
 
     const Type& operator[](size_t index) const noexcept {
+        assert(index < size_);
         return ptr_[index];
     }
 
@@ -160,6 +162,7 @@ public:
     
     Iterator Insert(ConstIterator pos, Type value) {
         size_t index = static_cast<size_t>(pos - ptr_.Get());
+        assert(index <= size_);
 
         if (size_ == capacity_) {
             ArrayPtr<Type> copy_ptr(capacity_ == 0 ? 1 : capacity_ * 2);
@@ -178,11 +181,14 @@ public:
     }
     
     void PopBack() noexcept {
+        assert(size_ > 0);
         --size_;
     }
     
     Iterator Erase(ConstIterator pos) {
+        assert(size_ > 0);
         size_t index = static_cast<size_t>(pos - ptr_.Get());
+        assert(index < size_);
 
         std::copy(std::make_move_iterator(ptr_.Get() + index + 1), std::make_move_iterator(ptr_.Get() + size_), ptr_.Get() + index);
         --size_;
@@ -213,7 +219,7 @@ private:
 
 template <typename Type>
 inline bool operator==(const SimpleVector<Type>& lhs, const SimpleVector<Type>& rhs) {
-    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    return lhs.GetSize() == rhs.GetSize() && std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 template <typename Type>
