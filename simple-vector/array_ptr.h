@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <utility>
 
+
 template <typename Type>
 class ArrayPtr {
 public:
@@ -22,17 +23,20 @@ public:
     // Запрещаем копирование
     ArrayPtr(const ArrayPtr&) = delete;
 
+    // Конструктор перемещения
     ArrayPtr(ArrayPtr&& other) noexcept {
         raw_ptr_ = std::exchange(other.raw_ptr_, nullptr);
     }
 
+    // Высвобождает память по окончанию жизненного цикла объекта
     ~ArrayPtr() {
         delete[] raw_ptr_;
     }
 
-    // Запрещаем присваивание
+    // Запрещаем присваивание копированием
     ArrayPtr& operator=(const ArrayPtr&) = delete;
 
+    // Присваивание пермещением
     ArrayPtr& operator=(ArrayPtr&& other) noexcept {
         if (this != &other) {
             raw_ptr_ = std::exchange(other.raw_ptr_, nullptr);
@@ -74,5 +78,5 @@ public:
     }
 
 private:
-    Type* raw_ptr_ = nullptr;
+    Type* raw_ptr_ = nullptr;   // < сырой указатель на массив
 };
